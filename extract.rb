@@ -16,7 +16,11 @@ end
 
 matched_endpoints = []
 
-sanitize_non_ascii(file).gsub(/;/, "\n").scan(/(^.*?("|')(\/[\w\d\?\/&=\#\.\!:_-]*?)(\2).*$)/).map do |string|
+original_regex = /(^.*?("|')(\/[\w\d\?\/&=\#\.\!:_-]*?)(\2).*$)/
+regex = /(.*?("|'|\/)\^?\\?(\/[\w\d\?\/&=\#\.\!:_\-\\]*)(\2|))/
+sanitize_non_ascii(file).gsub(/;/, "\n").scan(regex).map do |string|
+  string[2].gsub!("\\/", "/")
+
   next if matched_endpoints.include?(string[2])
 
   matched_endpoints << string[2]
